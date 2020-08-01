@@ -1,7 +1,7 @@
 use crate::Scalar;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vec3(pub Scalar, pub Scalar, pub Scalar);
 
 impl Add for Vec3 {
@@ -42,7 +42,7 @@ impl Mul<Vec3> for Vec3 {
 impl Div<Scalar> for Vec3 {
 	type Output = Self;
 	fn div(self, other: Scalar) -> Self {
-		Vec3(self.0 * other, self.1 * other, self.2 * other)
+		Vec3(self.0 / other, self.1 / other, self.2 / other)
 	}
 }
 
@@ -80,11 +80,36 @@ impl DivAssign<Scalar> for Vec3 {
 
 impl Vec3 {
 	#[inline]
+	pub fn ones() -> Self {
+		Self(1.0, 1.0, 1.0)
+	}
+
+	#[inline]
+	pub fn zeros() -> Self {
+		Self(0.0, 0.0, 0.0)
+	}
+
+	#[inline]
+	pub fn x(&self) -> Scalar {
+		self.0
+	}
+
+	#[inline]
+	pub fn y(&self) -> Scalar {
+		self.1
+	}
+
+	#[inline]
+	pub fn z(&self) -> Scalar {
+		self.2
+	}
+
+	#[inline]
 	pub fn cross(&self, other: Self) -> Self {
 		Self(
 			self.1 * other.2 - self.2 * other.1,
-			self.2 * other.0 - self.0 * other.2
-			self.0 * other.1 - self.1 * other.0
+			self.2 * other.0 - self.0 * other.2,
+			self.0 * other.1 - self.1 * other.0,
 		)
 	}
 
@@ -106,5 +131,27 @@ impl Vec3 {
 	#[inline]
 	pub fn norm(&self) -> Scalar {
 		self.norm_squared().sqrt()
+	}
+
+	#[inline]
+	pub fn as_pixel(self) -> [u8; 3] {
+		let pixel = self * 255.999;
+		[pixel.0 as u8, pixel.1 as u8, pixel.2 as u8]
+	}
+}
+
+#[cfg(test)]
+mod test {
+	use super::*;
+
+	#[test]
+	fn test_norm() {
+		let v = Vec3(3.0, 4.0, 5.0);
+		assert!((v.norm_squared() - 50.0).abs() < 1e-9);
+
+		let u = dbg!(v.normalized());
+		assert!((u.0 - v.0 / v.norm()).abs() < 1e-9);
+		assert!((u.1 - v.1 / v.norm()).abs() < 1e-9);
+		assert!((u.2 - v.2 / v.norm()).abs() < 1e-9);
 	}
 }

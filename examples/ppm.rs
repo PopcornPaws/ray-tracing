@@ -28,7 +28,7 @@ fn do_main() -> std::io::Result<()> {
 
 fn main() {
 	match do_main() {
-		Ok(()) => println!("Successfully written .ppm file"),
+		Ok(()) => println!("Successfully written .ppm file!"),
 		Err(e) => println!("{}", e),
 	}
 }
