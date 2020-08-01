@@ -80,6 +80,15 @@ impl DivAssign<Scalar> for Vec3 {
 
 impl Vec3 {
 	#[inline]
+	pub fn cross(&self, other: Self) -> Self {
+		Self(
+			self.1 * other.2 - self.2 * other.1,
+			self.2 * other.0 - self.0 * other.2
+			self.0 * other.1 - self.1 * other.0
+		)
+	}
+
+	#[inline]
 	pub fn dot(&self, other: Self) -> Scalar {
 		self.0 * other.0 + self.1 * other.1 + self.2 * other.2
 	}
