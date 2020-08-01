@@ -10,7 +10,7 @@ fn do_main() -> std::io::Result<()> {
 	file.write_all(format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT).as_bytes())?;
 
 	for h in (0..IMAGE_HEIGHT).rev() {
-		println!("Scanlines remaining: {}\r", h);
+		print!("Scanlines remaining: {}\r", h);
 		for w in 0..IMAGE_WIDTH {
 			let r = w as Scalar / (IMAGE_WIDTH - 1) as Scalar;
 			let g = h as Scalar / (IMAGE_HEIGHT - 1) as Scalar;
