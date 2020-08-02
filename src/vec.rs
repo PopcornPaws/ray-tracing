@@ -154,4 +154,10 @@ mod test {
 		assert!((u.1 - v.1 / v.norm()).abs() < 1e-9);
 		assert!((u.2 - v.2 / v.norm()).abs() < 1e-9);
 	}
+
+	#[test]
+	fn test_dot() {
+		let v = Vec3(3.0, 4.0, 5.0);
+		assert!((v.norm_squared() - v.dot(v)).abs() < 1e-9);
+	}
 }

@@ -5,7 +5,17 @@ use ray_tracing::Scalar;
 use ray_tracing::vec::Vec3;
 use ray_tracing::ray::Ray;
 
+fn is_sphere_hit(center: Vec3, radius: Scalar, ray: &Ray) -> bool {
+	let oc = ray.origin - center;
+	let a: Scalar = ray.direction.norm_squared();
+	let b: Scalar = 2.0 * ray.direction.dot(oc);
+	let c: Scalar = oc.norm_squared() - radius.powi(2);
+
+	(b.powi(2) - 4.0 * a * c) > 0.0
+}
+
 fn ray_color(r: &Ray) -> Vec3 {
+	if is_sphere_hit(Vec3(0.0, 0.0, -1.0), 0.5, r) { return Vec3(1.0, 0.0, 0.0) }
 	let unit_direction = r.direction.normalized();
 	let t: Scalar = 0.5 * (unit_direction.y() + 1.0);
 
@@ -16,11 +26,11 @@ fn do_main() -> std::io::Result<()> {
 	// image
 	let aspect_ratio: Scalar = 16.0 / 9.0;
 	let image_width: usize = 400;
-	let image_height = image_width / aspect_ratio as usize;
+	let image_height = (image_width as Scalar / aspect_ratio) as usize;
 
 	// camera 
 	let viewport_height: Scalar = 2.0;
-	let viewport_width: Scalar = viewport_height / aspect_ratio;
+	let viewport_width: Scalar = viewport_height * aspect_ratio;
 	let focal_length: Scalar = 1.0;
 
 	let origin = Vec3(0.0, 0.0, 0.0);
