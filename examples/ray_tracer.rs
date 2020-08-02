@@ -1,23 +1,32 @@
 use std::fs::File;
 use std::io::Write;
 
-use ray_tracing::Scalar;
-use ray_tracing::vec::Vec3;
-use ray_tracing::ray::Ray;
+use ray_tracing::{Ray, Scalar, Vec3};
 
-fn is_sphere_hit(center: Vec3, radius: Scalar, ray: &Ray) -> bool {
+fn is_sphere_hit(center: Vec3, radius: Scalar, ray: &Ray) -> Scalar {
 	let oc = ray.origin - center;
 	let a: Scalar = ray.direction.norm_squared();
-	let b: Scalar = 2.0 * ray.direction.dot(oc);
+	let half_b: Scalar = ray.direction.dot(oc);
 	let c: Scalar = oc.norm_squared() - radius.powi(2);
 
-	(b.powi(2) - 4.0 * a * c) > 0.0
+	let discriminant = half_b.powi(2) - a * c;
+
+	if discriminant < 0.0 {
+		return -1.0
+	} else {
+		return (-half_b - discriminant.sqrt()) / a
+	}
 }
 
 fn ray_color(r: &Ray) -> Vec3 {
-	if is_sphere_hit(Vec3(0.0, 0.0, -1.0), 0.5, r) { return Vec3(1.0, 0.0, 0.0) }
+	let mut t = is_sphere_hit(Vec3(0.0, 0.0, -1.0), 0.5, r);
+	if t > 0.0 {
+		let normal = (r.at(t) - Vec3(0.0, 0.0, -1.0)).normalized();
+		return 0.5 * Vec3(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0)
+	} 
+
 	let unit_direction = r.direction.normalized();
-	let t: Scalar = 0.5 * (unit_direction.y() + 1.0);
+	t = 0.5 * (unit_direction.y() + 1.0);
 
 	(1.0 - t) * Vec3::ones() + t * Vec3(0.5, 0.7, 1.0)
 }
