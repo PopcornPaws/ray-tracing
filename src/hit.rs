@@ -10,6 +10,7 @@ pub struct Hit {
 	pub point: Vec3,
 	pub normal: Vec3,
 	pub t: Scalar,
+	pub front_face: bool,
 }
 
 pub struct Sphere {
@@ -28,17 +29,34 @@ impl Hittable for Sphere {
 
 		if discriminant > 0.0 {
 			let root = discriminant.sqrt();
-
-			let temp = (- half_b - root) / a; // -b - sqrt() / a
-			if t_range.contains(&temp) {
-				let point = ray.at(temp);
-				return Some(Hit {
-					point,
-					normal: (point - self.center) / self.radius, 
-					t: temp,
-				})
+			for r in [-root, root].iter() {
+				let temp = (- half_b + r) / a; // -b +- sqrt() / a (if t is positive, then the point is in front of the ray, otherwise it's behind
+				if t_range.contains(&temp) {
+					let point = ray.at(temp);
+					return Some(Hit {
+						point,
+						normal: -r.signum() * (point - self.center) / self.radius,
+						t: temp,
+						front_face: *r >= 0.0,
+					})
+				}
 			}
 		}
 		None
+	}
+}
+
+pub type ObjectList = [Box<dyn Hittable>];
+
+impl Hittable for ObjectList {
+	fn hit(&self, ray: &Ray, mut t_range: Range<Scalar>) -> Option<Hit> {
+		let mut hit = None;
+		for object in self.iter() {
+			if let Some(h) = object.hit(ray, t_range.clone()) {
+				t_range.end = h.t; // closest hit so far
+				hit = Some(h);
+			}
+		}
+		hit
 	}
 }
