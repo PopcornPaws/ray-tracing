@@ -2,8 +2,12 @@ use std::fs::File;
 use std::io::Write;
 use std::ops::Range;
 
+use rand::Rng;
+
 use ray_tracing::hit::{Hittable, ObjectList, Sphere};
-use ray_tracing::{Ray, Scalar, Vec3};
+use ray_tracing::{Camera, Ray, Scalar, Vec3};
+
+//fn write_color(pixel_color: Vec3, samples_per_pixel: Scalar) {
 
 fn ray_color(r: &Ray, world: &ObjectList) -> Vec3 {
     if let Some(hit) = world.hit(
@@ -41,14 +45,11 @@ fn do_main() -> std::io::Result<()> {
 
     // camera
     let viewport_height: Scalar = 2.0;
-    let viewport_width: Scalar = viewport_height * aspect_ratio;
     let focal_length: Scalar = 1.0;
+    let camera = Camera::new(aspect_ratio, viewport_height, focal_length);
 
-    let origin = Vec3(0.0, 0.0, 0.0);
-    let horizontal = Vec3(viewport_width, 0.0, 0.0);
-    let vertical = Vec3(0.0, viewport_height, 0.0);
-    let lower_left_corner =
-        origin - horizontal / 2.0 - vertical / 2.0 - Vec3(0.0, 0.0, focal_length);
+    let samples_per_pixel: usize = 100;
+    let mut rng = rand::thread_rng();
 
     let mut file = File::create("assets/rays.ppm")?;
     file.write_all(format!("P3\n{} {}\n255\n", image_width, image_height).as_bytes())?;
@@ -56,17 +57,16 @@ fn do_main() -> std::io::Result<()> {
     for h in (0..image_height).rev() {
         print!("Scanlines remaining: {}\r", h);
         for w in 0..image_width {
-            let a = w as Scalar / (image_width - 1) as Scalar;
-            let b = h as Scalar / (image_height - 1) as Scalar;
+            let mut pixel_color = Vec3::zeros();
+            for _ in 0..samples_per_pixel {
+                let u = (w as Scalar * rng.gen::<Scalar>()) / (image_width - 1) as Scalar;
+                let v = (h as Scalar * rng.gen::<Scalar>()) / (image_height - 1) as Scalar;
+                let ray = camera.get_ray(u, v);
+                pixel_color += ray_color(&ray, world.as_slice());
+            }
 
-            let ray = Ray {
-                origin,
-                direction: lower_left_corner + a * horizontal + b * vertical - origin,
-            };
-
-            let pixel = ray_color(&ray, world.as_slice()).as_pixel();
-
-            file.write_all(format!("{} {} {}\n", pixel[0], pixel[1], pixel[2]).as_bytes())?;
+            let pixel = (pixel_color / samples_per_pixel as Scalar).as_pixel();
+            file.write_all(format!("{} {} {}\n", pixel[0].max(255), pixel[1].max(255), pixel[2].max(255)).as_bytes())?;
         }
     }
     Ok(())
