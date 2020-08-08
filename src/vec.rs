@@ -1,5 +1,5 @@
 use crate::Scalar;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3(pub Scalar, pub Scalar, pub Scalar);
@@ -78,6 +78,13 @@ impl DivAssign<Scalar> for Vec3 {
 	}
 }
 
+impl Neg for Vec3 {
+	type Output = Self;
+	fn neg(self) -> Self {
+		Self(-self.0, -self.1, -self.2)
+	}
+}
+
 impl Vec3 {
 	#[inline]
 	pub fn ones() -> Self {
@@ -90,18 +97,18 @@ impl Vec3 {
 	}
 
 	#[inline]
-	pub fn x(&self) -> Scalar {
-		self.0
+	pub fn x() -> Self {
+		Self(1.0, 0.0, 0.0)
 	}
 
 	#[inline]
-	pub fn y(&self) -> Scalar {
-		self.1
+	pub fn y() -> Self {
+		Self(0.0, 1.0, 0.0)
 	}
 
 	#[inline]
-	pub fn z(&self) -> Scalar {
-		self.2
+	pub fn z() -> Self {
+		Self(0.0, 0.0, 1.0)
 	}
 
 	#[inline]

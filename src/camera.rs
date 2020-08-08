@@ -11,8 +11,8 @@ impl Camera {
     #[inline]
     pub fn new(aspect_ratio: Scalar, viewport_height: Scalar, focal_length: Scalar) -> Self {
         let viewport_width = viewport_height * aspect_ratio;
-        let horizontal = Vec3(viewport_width, 0.0, 0.0); 
-        let vertical = Vec3(0.0, viewport_height, 0.0);
+        let horizontal = viewport_width * Vec3::x();
+        let vertical = viewport_height * Vec3::y();
         let origin = Vec3::zeros();
         Self {
             origin,
@@ -21,7 +21,7 @@ impl Camera {
             lower_left_corner: origin
                 - horizontal / 2.0
                 - vertical / 2.0
-                - Vec3(0.0, 0.0, focal_length),
+                - focal_length * Vec3::z(),//(0.0, 0.0, focal_length),
         }
     }
 

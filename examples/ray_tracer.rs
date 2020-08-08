@@ -15,7 +15,7 @@ fn ray_color(r: &Ray, world: &ObjectList) -> Vec3 {
             end: Scalar::MAX,
         },
     ) {
-        return 0.5 * (hit.normal + Vec3(1.0, 1.0, 1.0));
+        return 0.5 * (hit.normal + Vec3::ones());
     }
 
     let unit_direction = r.direction.normalized();
@@ -33,7 +33,7 @@ fn do_main() -> std::io::Result<()> {
     // world
     let mut world = Vec::<Box<dyn Hittable>>::with_capacity(2);
     world.push(Box::new(Sphere {
-        center: Vec3(0.0, 0.0, -1.0),
+        center: -Vec3::z(),
         radius: 0.5,
     }));
     world.push(Box::new(Sphere {
