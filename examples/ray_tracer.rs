@@ -24,7 +24,6 @@ fn ray_color(r: &mut Ray, world: &ObjectList, mut depth: usize) -> Vec3 {
             origin: hit.point,
             direction: target - hit.point,
         };
-        //return 0.5 * (hit.normal + Vec3::ones());
     }
 
     let unit_direction = r.direction.normalized();
@@ -74,7 +73,7 @@ fn do_main() -> std::io::Result<()> {
             }
 
             let pixel = (pixel_color / samples_per_pixel as Scalar).as_pixel();
-            file.write_all(format!("{} {} {}\n", pixel[0].min(255), pixel[1].min(255), pixel[2].min(255)).as_bytes())?;
+            file.write_all(format!("{} {} {}\n", pixel[0], pixel[1], pixel[2]).as_bytes())?;
         }
     }
     Ok(())
