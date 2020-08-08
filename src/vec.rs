@@ -1,6 +1,8 @@
 use crate::Scalar;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
+use rand::Rng;
+
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3(pub Scalar, pub Scalar, pub Scalar);
 
@@ -111,6 +113,16 @@ impl Vec3 {
 		Self(0.0, 0.0, 1.0)
 	}
 
+	pub fn random_in_unit_circle() -> Vec3 {
+		let mut rng = rand::thread_rng();
+		loop {
+			let v = Vec3(rng.gen(), rng.gen(), rng.gen());
+			if v.norm_squared() < 1.0 {
+				return v;
+			}
+		}
+	}
+
 	#[inline]
 	pub fn cross(&self, other: Self) -> Self {
 		Self(
@@ -166,5 +178,18 @@ mod test {
 	fn test_dot() {
 		let v = Vec3(3.0, 4.0, 5.0);
 		assert!((v.norm_squared() - v.dot(v)).abs() < 1e-9);
+	}
+
+	#[test]
+	fn test_neg() {
+		let v = Vec3::ones();
+		let vn = -v;
+		assert!((v + vn).norm() < 1e-9);
+	}
+
+	#[test]
+	fn test_random_in_unit_circle() {
+		let v = Vec3::random_in_unit_circle();
+		assert!(v.norm() < 1.0);
 	}
 }
