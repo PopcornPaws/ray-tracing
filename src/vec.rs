@@ -113,13 +113,22 @@ impl Vec3 {
         Self(0.0, 0.0, 1.0)
     }
 
-    pub fn random_in_unit_circle() -> Self {
+    pub fn random_in_unit_sphere() -> Self {
         let mut rng = rand::thread_rng();
         loop {
             let v = 2.0 * Self(rng.gen(), rng.gen(), rng.gen()) - Self::ones();
             if v.norm_squared() < 1.0 {
                 return v;
             }
+        }
+    }
+
+    pub fn random_in_hemisphere(normal: Vec3) -> Self {
+        let v = Self::random_in_unit_sphere();
+        if v.dot(normal) > 0.0 {
+            v
+        } else {
+            -v
         }
     }
 
@@ -162,7 +171,7 @@ impl Vec3 {
 
     #[inline]
     pub fn as_pixel(self) -> [u8; 3] {
-    	let v = Vec3(self.0.sqrt(), self.1.sqrt(), self.2.sqrt()); // gamma correction
+        let v = Vec3(self.0.sqrt(), self.1.sqrt(), self.2.sqrt()); // gamma correction
         let pixel = v * 255.999;
         [
             pixel.0.min(255.0) as u8,

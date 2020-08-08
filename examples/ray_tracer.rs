@@ -9,7 +9,7 @@ use ray_tracing::{Camera, Ray, Scalar, Vec3};
 fn ray_color(r: &Ray, world: &ObjectList, depth: usize) -> Vec3 {
     if let Some(hit) = world.hit(r, 0.001..Scalar::MAX) {
         if depth > 0 {
-            let target = hit.point + hit.normal + Vec3::random_unit_vector();
+            let target = hit.point + hit.normal + Vec3::random_in_hemisphere(hit.normal);
             return 0.5
                 * ray_color(
                     &Ray {
