@@ -7,8 +7,6 @@ use rand::Rng;
 use ray_tracing::hit::{Hittable, ObjectList, Sphere};
 use ray_tracing::{Camera, Ray, Scalar, Vec3};
 
-//fn write_color(pixel_color: Vec3, samples_per_pixel: Scalar) {
-
 fn ray_color(r: &Ray, world: &ObjectList) -> Vec3 {
     if let Some(hit) = world.hit(
         r,
@@ -21,7 +19,7 @@ fn ray_color(r: &Ray, world: &ObjectList) -> Vec3 {
     }
 
     let unit_direction = r.direction.normalized();
-    let t = 0.5 * (unit_direction.y() + 1.0);
+    let t = 0.5 * (unit_direction.1 + 1.0);
 
     (1.0 - t) * Vec3::ones() + t * Vec3(0.5, 0.7, 1.0)
 }
