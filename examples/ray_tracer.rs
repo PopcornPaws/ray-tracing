@@ -59,14 +59,14 @@ fn do_main() -> std::io::Result<()> {
         for w in 0..image_width {
             let mut pixel_color = Vec3::zeros();
             for _ in 0..samples_per_pixel {
-                let u = (w as Scalar * rng.gen::<Scalar>()) / (image_width - 1) as Scalar;
-                let v = (h as Scalar * rng.gen::<Scalar>()) / (image_height - 1) as Scalar;
+                let u = (w as Scalar + rng.gen::<Scalar>()) / (image_width - 1) as Scalar;
+                let v = (h as Scalar + rng.gen::<Scalar>()) / (image_height - 1) as Scalar;
                 let ray = camera.get_ray(u, v);
                 pixel_color += ray_color(&ray, world.as_slice());
             }
 
             let pixel = (pixel_color / samples_per_pixel as Scalar).as_pixel();
-            file.write_all(format!("{} {} {}\n", pixel[0].max(255), pixel[1].max(255), pixel[2].max(255)).as_bytes())?;
+            file.write_all(format!("{} {} {}\n", pixel[0].min(255), pixel[1].min(255), pixel[2].min(255)).as_bytes())?;
         }
     }
     Ok(())
