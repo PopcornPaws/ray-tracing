@@ -1,35 +1,33 @@
 use std::fs::File;
 use std::io::Write;
-use std::ops::Range;
 
 use rand::Rng;
 
 use ray_tracing::hit::{Hittable, ObjectList, Sphere};
 use ray_tracing::{Camera, Ray, Scalar, Vec3};
 
-fn ray_color(r: &mut Ray, world: &ObjectList, mut depth: usize) -> Vec3 {
-    while let Some(hit) = world.hit(
-        &r,
-        Range {
-            start: 0.0,
-            end: Scalar::MAX,
-        },
-    ) {
-        if depth == 0 {
+fn ray_color(r: &Ray, world: &ObjectList, depth: usize) -> Vec3 {
+    if let Some(hit) = world.hit(r, 0.001..Scalar::MAX) {
+        if depth > 0 {
+            let target = hit.point + hit.normal + Vec3::random_unit_vector();
+            return 0.5
+                * ray_color(
+                    &Ray {
+                        origin: hit.point,
+                        direction: target - hit.point,
+                    },
+                    world,
+                    depth - 1,
+                );
+        } else {
             return Vec3::zeros();
         }
-        depth -= 1;
-        let target = hit.point + hit.normal + Vec3::random_in_unit_circle();
-        *r = Ray {
-            origin: hit.point,
-            direction: target - hit.point,
-        };
     }
 
     let unit_direction = r.direction.normalized();
     let t = 0.5 * (unit_direction.1 + 1.0);
 
-    0.5 * ((1.0 - t) * Vec3::ones() + t * Vec3(0.5, 0.7, 1.0))
+    (1.0 - t) * Vec3::ones() + t * Vec3(0.5, 0.7, 1.0)
 }
 
 fn do_main() -> std::io::Result<()> {
@@ -68,8 +66,8 @@ fn do_main() -> std::io::Result<()> {
             for _ in 0..samples_per_pixel {
                 let u = (w as Scalar + rng.gen::<Scalar>()) / (image_width - 1) as Scalar;
                 let v = (h as Scalar + rng.gen::<Scalar>()) / (image_height - 1) as Scalar;
-                let mut ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&mut ray, world.as_slice(), depth);
+                let ray = camera.get_ray(u, v);
+                pixel_color += ray_color(&ray, world.as_slice(), depth);
             }
 
             let pixel = (pixel_color / samples_per_pixel as Scalar).as_pixel();

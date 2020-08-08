@@ -113,14 +113,22 @@ impl Vec3 {
         Self(0.0, 0.0, 1.0)
     }
 
-    pub fn random_in_unit_circle() -> Vec3 {
+    pub fn random_in_unit_circle() -> Self {
         let mut rng = rand::thread_rng();
         loop {
-            let v = 2.0 * Vec3(rng.gen(), rng.gen(), rng.gen()) - Vec3::ones();
+            let v = 2.0 * Self(rng.gen(), rng.gen(), rng.gen()) - Self::ones();
             if v.norm_squared() < 1.0 {
                 return v;
             }
         }
+    }
+
+    pub fn random_unit_vector() -> Self {
+        let mut rng = rand::thread_rng();
+        let a: Scalar = 2.0 * crate::PI * rng.gen::<Scalar>();
+        let z: Scalar = 2.0 * rng.gen::<Scalar>() - 1.0;
+        let r: Scalar = (1.0 - z * z).sqrt();
+        Self(r * a.cos(), r * a.sin(), z)
     }
 
     #[inline]
