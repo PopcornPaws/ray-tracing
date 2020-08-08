@@ -7,21 +7,30 @@ use rand::Rng;
 use ray_tracing::hit::{Hittable, ObjectList, Sphere};
 use ray_tracing::{Camera, Ray, Scalar, Vec3};
 
-fn ray_color(r: &Ray, world: &ObjectList) -> Vec3 {
-    if let Some(hit) = world.hit(
-        r,
+fn ray_color(r: &mut Ray, world: &ObjectList, mut depth: usize) -> Vec3 {
+    while let Some(hit) = world.hit(
+        &r,
         Range {
             start: 0.0,
             end: Scalar::MAX,
         },
     ) {
-        return 0.5 * (hit.normal + Vec3::ones());
+        if depth == 0 {
+            return Vec3::zeros();
+        }
+        depth -= 1;
+        let target = hit.point + hit.normal + Vec3::random_in_unit_circle();
+        *r = Ray {
+            origin: hit.point,
+            direction: target - hit.point,
+        };
+        //return 0.5 * (hit.normal + Vec3::ones());
     }
 
     let unit_direction = r.direction.normalized();
     let t = 0.5 * (unit_direction.1 + 1.0);
 
-    (1.0 - t) * Vec3::ones() + t * Vec3(0.5, 0.7, 1.0)
+    0.5 * ((1.0 - t) * Vec3::ones() + t * Vec3(0.5, 0.7, 1.0))
 }
 
 fn do_main() -> std::io::Result<()> {
@@ -46,6 +55,7 @@ fn do_main() -> std::io::Result<()> {
     let focal_length: Scalar = 1.0;
     let camera = Camera::new(aspect_ratio, viewport_height, focal_length);
 
+    let depth: usize = 50;
     let samples_per_pixel: usize = 100;
     let mut rng = rand::thread_rng();
 
@@ -59,8 +69,8 @@ fn do_main() -> std::io::Result<()> {
             for _ in 0..samples_per_pixel {
                 let u = (w as Scalar + rng.gen::<Scalar>()) / (image_width - 1) as Scalar;
                 let v = (h as Scalar + rng.gen::<Scalar>()) / (image_height - 1) as Scalar;
-                let ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&ray, world.as_slice());
+                let mut ray = camera.get_ray(u, v);
+                pixel_color += ray_color(&mut ray, world.as_slice(), depth);
             }
 
             let pixel = (pixel_color / samples_per_pixel as Scalar).as_pixel();
