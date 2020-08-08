@@ -116,7 +116,7 @@ impl Vec3 {
 	pub fn random_in_unit_circle() -> Vec3 {
 		let mut rng = rand::thread_rng();
 		loop {
-			let v = Vec3(rng.gen(), rng.gen(), rng.gen());
+			let v = 2.0 * Vec3(rng.gen(), rng.gen(), rng.gen()) - Vec3::ones(); 
 			if v.norm_squared() < 1.0 {
 				return v;
 			}
