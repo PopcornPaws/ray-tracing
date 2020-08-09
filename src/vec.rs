@@ -112,6 +112,11 @@ impl Vec3 {
     }
 
     #[inline]
+    pub fn reflect(self, normal: Self) -> Self {
+        self - 2.0 * self.dot(normal) * normal
+    }
+
+    #[inline]
     pub fn cross(&self, other: Self) -> Self {
         Self(
             self.1 * other.2 - self.2 * other.1,
