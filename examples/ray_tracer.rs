@@ -5,11 +5,14 @@ use rand::Rng;
 
 use ray_tracing::hit::{Hittable, ObjectList, Sphere};
 use ray_tracing::{Camera, Ray, Scalar, Vec3};
+use ray_tracing::scatter;
 
 fn ray_color(r: &Ray, world: &ObjectList, depth: usize) -> Vec3 {
     if let Some(hit) = world.hit(r, 0.001..Scalar::MAX) {
         if depth > 0 {
-            let target = hit.point + hit.normal + Vec3::random_in_hemisphere(hit.normal);
+            //let target = hit.point + hit.normal + scatter::hemispherical(hit.normal);
+            //let target = hit.point + hit.normal + scatter::lazy_lambertian();
+            let target = hit.point + hit.normal + scatter::true_lambertian();
             return 0.5
                 * ray_color(
                     &Ray {

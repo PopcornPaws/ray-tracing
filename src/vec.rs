@@ -1,8 +1,6 @@
 use crate::Scalar;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-use rand::Rng;
-
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3(pub Scalar, pub Scalar, pub Scalar);
 
@@ -111,33 +109,6 @@ impl Vec3 {
     #[inline]
     pub fn z() -> Self {
         Self(0.0, 0.0, 1.0)
-    }
-
-    pub fn random_in_unit_sphere() -> Self {
-        let mut rng = rand::thread_rng();
-        loop {
-            let v = 2.0 * Self(rng.gen(), rng.gen(), rng.gen()) - Self::ones();
-            if v.norm_squared() < 1.0 {
-                return v;
-            }
-        }
-    }
-
-    pub fn random_in_hemisphere(normal: Vec3) -> Self {
-        let v = Self::random_in_unit_sphere();
-        if v.dot(normal) > 0.0 {
-            v
-        } else {
-            -v
-        }
-    }
-
-    pub fn random_unit_vector() -> Self {
-        let mut rng = rand::thread_rng();
-        let a: Scalar = 2.0 * crate::PI * rng.gen::<Scalar>();
-        let z: Scalar = 2.0 * rng.gen::<Scalar>() - 1.0;
-        let r: Scalar = (1.0 - z * z).sqrt();
-        Self(r * a.cos(), r * a.sin(), z)
     }
 
     #[inline]

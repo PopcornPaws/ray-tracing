@@ -1,6 +1,7 @@
 pub mod camera;
 pub mod hit;
 pub mod ray;
+pub mod scatter;
 pub mod vec;
 
 pub use camera::Camera;
