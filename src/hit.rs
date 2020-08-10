@@ -4,7 +4,7 @@ use crate::material::Material;
 use std::ops::Range;
 
 pub trait Hittable {
-	fn hit(&self, ray: &Ray, t_range: Range<Scalar>) -> Option<(Hit, &dyn Material)>; 
+	fn hit(&self, ray: Ray, t_range: Range<Scalar>) -> Option<(Hit, &dyn Material)>; 
 }
 
 pub struct Hit {
@@ -21,7 +21,7 @@ pub struct Sphere {
 }
 
 impl Hittable for Sphere {
-	fn hit(&self, ray: &Ray, t_range: Range<Scalar>) -> Option<(Hit, &dyn Material)> {
+	fn hit(&self, ray: Ray, t_range: Range<Scalar>) -> Option<(Hit, &dyn Material)> {
 		let oc = ray.origin - self.center;
 		let a = ray.direction.norm_squared();
 		let half_b = oc.dot(ray.direction);
@@ -52,7 +52,7 @@ impl Hittable for Sphere {
 pub type ObjectList = [Box<dyn Hittable>];
 
 impl Hittable for ObjectList {
-	fn hit(&self, ray: &Ray, mut t_range: Range<Scalar>) -> Option<(Hit, &dyn Material)> {
+	fn hit(&self, ray: Ray, mut t_range: Range<Scalar>) -> Option<(Hit, &dyn Material)> {
 		let mut hit = None;
 		for object in self.iter() {
 			if let Some(h) = object.hit(ray, t_range.clone()) {

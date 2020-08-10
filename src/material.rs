@@ -8,24 +8,24 @@ pub trait Material {
 
 pub struct Scatter {
     pub attenuation: Vec3,
-    pub scattered: Ray,
+    pub ray: Ray,
 }
 
 pub struct Lambertian {
-    albedo: Vec3,
+    pub albedo: Vec3,
 }
 
 pub struct Metal {
-    albedo: Vec3,
+    pub albedo: Vec3,
 }
 
 impl Material for Lambertian {
     fn scatter(&self, _ray: Ray, hit: Hit) -> Scatter {
         Scatter {
             attenuation: self.albedo,
-            scattered: Ray {
+            ray: Ray {
                 origin: hit.point,
-                direction: hit.normal + random::random_unit_vector(),
+                direction: (hit.normal + random::unit_vec3()).normalized(),
             }
         }
     }
@@ -35,9 +35,9 @@ impl Material for Metal {
     fn scatter(&self, ray: Ray, hit: Hit) -> Scatter {
         Scatter {
             attenuation: self.albedo,
-            scattered: Ray {
+            ray: Ray {
                 origin: hit.point,
-                direction: ray.direction.normalized().reflect(hit.normal)
+                direction: ray.direction.reflect(hit.normal).normalized(),
             }
         }
     }
