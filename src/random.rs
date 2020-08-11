@@ -5,7 +5,7 @@ pub fn vec3_in_unit_sphere() -> Vec3 {
     let mut rng = rand::thread_rng();
     loop {
         let v = 2.0 * Vec3(rng.gen(), rng.gen(), rng.gen()) - Vec3::ones();
-        if v.norm_squared() < 1.0 {
+        if v.norm_squared() <= 1.0 {
             return v;
         }
     }

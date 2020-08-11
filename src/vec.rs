@@ -148,7 +148,7 @@ impl Vec3 {
     #[inline]
     pub fn as_pixel(self) -> [u8; 3] {
         let v = Vec3(self.0.sqrt(), self.1.sqrt(), self.2.sqrt()); // gamma correction
-        let pixel = v * 255.999;
+        let pixel = v * 255.0;
         [
             pixel.0.min(255.0) as u8,
             pixel.1.min(255.0) as u8,

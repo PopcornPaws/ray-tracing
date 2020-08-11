@@ -1,4 +1,4 @@
-use crate::{Ray, Vec3};
+use crate::{Ray, Scalar, Vec3};
 use crate::hit::Hit;
 use crate::random;
 
@@ -17,6 +17,7 @@ pub struct Lambertian {
 
 pub struct Metal {
     pub albedo: Vec3,
+    pub fuzz: Scalar,
 }
 
 impl Material for Lambertian {
@@ -37,9 +38,8 @@ impl Material for Metal {
             attenuation: self.albedo,
             ray: Ray {
                 origin: hit.point,
-                direction: ray.direction.reflect(hit.normal).normalized(),
+                direction: (ray.direction.reflect(hit.normal) + self.fuzz * random::vec3_in_unit_sphere()).normalized(),
             }
         }
     }
 }
-

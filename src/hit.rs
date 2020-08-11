@@ -32,7 +32,7 @@ impl Hittable for Sphere {
 		if discriminant > 0.0 {
 			let root = discriminant.sqrt();
 			for r in [-root, root].iter() {
-				let temp = (- half_b + r) / a; // -b +- sqrt() / a (if t is positive, then the point is in front of the ray, otherwise it's behind
+				let temp = (- half_b + r) / a;
 				if t_range.contains(&temp) {
 					let point = ray.at(temp);
 					return Some((Hit {
