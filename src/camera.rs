@@ -21,7 +21,7 @@ impl Camera {
             lower_left_corner: origin
                 - horizontal / 2.0
                 - vertical / 2.0
-                - focal_length * Vec3::z(),//(0.0, 0.0, focal_length),
+                - focal_length * Vec3::z(), //(0.0, 0.0, focal_length),
         }
     }
 

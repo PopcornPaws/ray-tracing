@@ -4,7 +4,7 @@ use std::io::Write;
 use rand::Rng;
 
 use ray_tracing::hit::{Hittable, ObjectList, Sphere};
-use ray_tracing::material::{Lambertian, Metal};
+use ray_tracing::material::{Dielectric, Lambertian, Metal};
 use ray_tracing::{Camera, Ray, Scalar, Vec3};
 
 fn ray_color(r: Ray, scene: &ObjectList, depth: usize) -> Vec3 {
@@ -55,9 +55,8 @@ fn do_main() -> std::io::Result<()> {
     scene.push(Box::new(Sphere {
         center: Vec3(1.1, 0.0, -1.0),
         radius: 0.5,
-        material: Box::new(Metal {
-            albedo: Vec3(0.8, 0.6, 0.2),
-            fuzz: 0.1,
+        material: Box::new(Dielectric {
+            refractive_index: 1.5,
         }),
     }));
 
