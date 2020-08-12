@@ -3,9 +3,9 @@ use std::io::Write;
 
 use rand::Rng;
 
-use ray_tracing::{Camera, Scalar, Vec3};
-use ray_tracing::ray_color;
 use ray_tracing::random_scene;
+use ray_tracing::ray_color;
+use ray_tracing::{Camera, Scalar, Vec3};
 
 fn do_main() -> std::io::Result<()> {
     // image
@@ -21,7 +21,15 @@ fn do_main() -> std::io::Result<()> {
     let vfov: Scalar = 20.0;
     let aperture: Scalar = 0.1;
     let dist_to_focus: Scalar = 10.0;
-    let camera = Camera::new(look_from, look_at, up_vector, vfov, aspect_ratio, aperture, dist_to_focus);
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        up_vector,
+        vfov,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
+    );
 
     let depth: usize = 50;
     let samples_per_pixel: usize = 50;

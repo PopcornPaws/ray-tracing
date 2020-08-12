@@ -1,5 +1,5 @@
-use crate::{PI, Ray, Scalar, Vec3};
 use crate::random;
+use crate::{Ray, Scalar, Vec3, PI};
 
 pub struct Camera {
     origin: Vec3,
@@ -37,10 +37,7 @@ impl Camera {
             origin,
             horizontal,
             vertical,
-            lower_left_corner: origin
-                - horizontal / 2.0
-                - vertical / 2.0
-                - focus_dist * w,
+            lower_left_corner: origin - horizontal / 2.0 - vertical / 2.0 - focus_dist * w,
             u,
             v,
             lens_radius: aperture / 2.0,
@@ -54,7 +51,9 @@ impl Camera {
         Ray {
             origin: self.origin + offset,
             direction: (self.lower_left_corner + s * self.horizontal + t * self.vertical
-                - self.origin - offset).normalized(),
+                - self.origin
+                - offset)
+                .normalized(),
         }
     }
 }
