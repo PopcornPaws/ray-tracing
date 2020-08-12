@@ -3,65 +3,24 @@ use std::io::Write;
 
 use rand::Rng;
 
-use ray_tracing::hit::{Hittable, Sphere};
-use ray_tracing::material::{Dielectric, Lambertian, Metal};
 use ray_tracing::{Camera, Scalar, Vec3};
-
 use ray_tracing::ray_color;
+use ray_tracing::random_scene;
 
 fn do_main() -> std::io::Result<()> {
     // image
-    let aspect_ratio: Scalar = 16.0 / 9.0;
-    let image_width: usize = 400;
+    let aspect_ratio: Scalar = 3.0 / 2.0;
+    let image_width: usize = 1200;
     let image_height = (image_width as Scalar / aspect_ratio) as usize;
-
     // scene
-    let mut scene = Vec::<Box<dyn Hittable>>::with_capacity(2);
-
-    // center sphere
-    scene.push(Box::new(Sphere {
-        center: -Vec3::z(),
-        radius: 0.5,
-        material: Box::new(Lambertian {
-            albedo: Vec3(0.7, 0.3, 0.3),
-        }),
-    }));
-
-    // left sphere
-    scene.push(Box::new(Sphere {
-        center: Vec3(-1.0, 0.0, -1.0),
-        radius: 0.5,
-        material: Box::new(Metal {
-            albedo: Vec3(0.8, 0.8, 0.8),
-            fuzz: 1.0,
-        }),
-    }));
-
-    // right sphere
-    scene.push(Box::new(Sphere {
-        center: Vec3(1.1, 0.0, -1.0),
-        radius: 0.5,
-        material: Box::new(Dielectric {
-            refractive_index: 1.5,
-        }),
-    }));
-
-    // ground
-    scene.push(Box::new(Sphere {
-        center: Vec3(0.0, -100.5, -1.0),
-        radius: 100.0,
-        material: Box::new(Lambertian {
-            albedo: Vec3(0.8, 0.8, 0.0),
-        }),
-    }));
-
+    let scene = random_scene();
     // camera
-    let look_from = Vec3(3.0, 3.0, 2.0);
-    let look_at = -Vec3::z();
+    let look_from = Vec3(13.0, 2.0, 3.0);
+    let look_at = Vec3::zeros();
     let up_vector = Vec3::y();
     let vfov: Scalar = 20.0;
-    let aperture: Scalar = 2.0;
-    let dist_to_focus: Scalar = (look_from - look_at).norm();
+    let aperture: Scalar = 0.1;
+    let dist_to_focus: Scalar = 10.0;
     let camera = Camera::new(look_from, look_at, up_vector, vfov, aspect_ratio, aperture, dist_to_focus);
 
     let depth: usize = 50;

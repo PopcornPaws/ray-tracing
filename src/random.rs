@@ -1,10 +1,14 @@
 use crate::{Scalar, Vec3};
 use rand::Rng;
 
-pub fn vec3_in_unit_sphere() -> Vec3 {
+pub fn vec3() -> Vec3 {
     let mut rng = rand::thread_rng();
+    Vec3(rng.gen(), rng.gen(), rng.gen())
+}
+
+pub fn vec3_in_unit_sphere() -> Vec3 {
     loop {
-        let v = 2.0 * Vec3(rng.gen(), rng.gen(), rng.gen()) - Vec3::ones();
+        let v = 2.0 * vec3() - Vec3::ones();
         if v.norm_squared() <= 1.0 {
             return v;
         }
