@@ -15,7 +15,7 @@ pub fn unit_vec3() -> Vec3 {
     let mut rng = rand::thread_rng();
     let a: Scalar = 2.0 * crate::PI * rng.gen::<Scalar>();
     let z: Scalar = 2.0 * rng.gen::<Scalar>() - 1.0;
-    let r: Scalar = (1.0 - z * z).sqrt();
+    let r: Scalar = (1.0 - z.powi(2)).sqrt();
     Vec3(r * a.cos(), r * a.sin(), z)
 }
 

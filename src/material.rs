@@ -54,22 +54,32 @@ impl Material for Dielectric {
     #[rustfmt::skip]
     fn scatter(&self, ray: Ray, hit: Hit) -> Scatter {
         let eta = if hit.front_face { 1.0 / self.refractive_index } else { self.refractive_index };
-        let refracted = refract(ray.direction.normalized(), hit.normal, eta);
+        let cos_theta = -ray.direction.normalized().dot(hit.normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta.powi(2)).sqrt();
+
+
+        let refracted_direction = if eta * sin_theta > 1.0 || schlick(cos_theta, eta) > rand::random::<Scalar>() {
+            // must reflect
+            ray.direction.normalized().reflect(hit.normal)
+        } else {
+            // can refract
+            let r_perpendicular = eta * (ray.direction + cos_theta * hit.normal);
+            let r_parallel = -(1.0 - r_perpendicular.norm_squared()).abs().sqrt() * hit.normal;
+
+            (r_perpendicular + r_parallel).normalized()
+        };
 
         Scatter {
             attenuation: Vec3::ones(),
             ray: Ray {
                 origin: hit.point,
-                direction: refracted,
+                direction: refracted_direction,
             }
         }
     }
 }
 
-fn refract(incoming: Vec3, normal: Vec3, eta: Scalar) -> Vec3 {
-    let cos_theta = -incoming.dot(normal);
-    let r_perpendicular = eta * (incoming + cos_theta * normal);
-    let r_parallel = -(1.0 - r_perpendicular.norm_squared()).abs().sqrt() * normal;
-
-    r_perpendicular + r_parallel
+fn schlick(cosine: Scalar, eta: Scalar) -> Scalar {
+    let r_0 = ((1.0 - eta) / (1.0 + eta)).powi(2);
+    r_0 + (1.0 - r_0) * (1.0 - cosine).powi(5)
 }
