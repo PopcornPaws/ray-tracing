@@ -27,3 +27,13 @@ pub fn vec3_in_hemisphere(normal: Vec3) -> Vec3 {
         -v
     }
 }
+
+pub fn vec3_in_unit_disc() -> Vec3 {
+    let mut rng = rand::thread_rng();
+    loop {
+        let v = Vec3(rng.gen(), rng.gen(), 0.0);
+        if v.norm_squared() <= 1.0 {
+            return v;
+        }
+    }
+}

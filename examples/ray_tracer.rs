@@ -70,9 +70,13 @@ fn do_main() -> std::io::Result<()> {
     }));
 
     // camera
-    let viewport_height: Scalar = 2.0;
-    let focal_length: Scalar = 1.0;
-    let camera = Camera::new(aspect_ratio, viewport_height, focal_length);
+    let look_from = Vec3(3.0, 3.0, 2.0);
+    let look_at = -Vec3::z();
+    let up_vector = Vec3::y();
+    let vfov: Scalar = 20.0;
+    let aperture: Scalar = 2.0;
+    let dist_to_focus: Scalar = (look_from - look_at).norm();
+    let camera = Camera::new(look_from, look_at, up_vector, vfov, aspect_ratio, aperture, dist_to_focus);
 
     let depth: usize = 50;
     let samples_per_pixel: usize = 50;
